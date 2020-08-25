@@ -9,7 +9,7 @@ client.on('ready', () => {
   console.log(`${client.user.username} has logged in.`);
 });
 
-client.on('message', (message) => {
+client.on('message', async (message) => {
   if (message.author.bot) return;
   console.log(`[${message.author.tag.split('#')[0]}] ${message.content}`);
   if (message.content.startsWith(PREFIX)) {
@@ -23,7 +23,7 @@ client.on('message', (message) => {
         return message.reply(
           'You do not have permissions to use that command.'
         );
-      if (args.length === 0) return message.reply('Please provide an ID');
+      if (args.length === 0) return message.reply('Please provide an ID.');
 
       const member = message.guild.members.cache.get(args[0]);
       if (member) {
@@ -35,7 +35,18 @@ client.on('message', (message) => {
         message.channel.send('That member was not found.');
       }
     } else if (CMD_NAME === 'ban') {
-      message.channel.send('Banned user');
+      if (!message.member.hasPermissions('BAN_MEMBERS'))
+        return message.reply(
+          'You do not have permissions to use that command.'
+        );
+      if (args.length === 0) return message.reply('Please provide an ID.');
+      try {
+        const user = await message.guild.members.ban(args[0]);
+        message.channel.send('User was banned');
+      } catch (error) {
+        console.log(error);
+        message.channel.send('An error occurred.');
+      }
     }
   }
 });
