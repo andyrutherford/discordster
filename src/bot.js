@@ -19,6 +19,10 @@ client.on('message', (message) => {
       .split(/\s+/);
 
     if (CMD_NAME === 'kick') {
+      if (!message.member.hasPermissions('KICK_MEMBERS'))
+        return message.reply(
+          'You do not have permissions to use that command.'
+        );
       if (args.length === 0) return message.reply('Please provide an ID');
 
       const member = message.guild.members.cache.get(args[0]);
