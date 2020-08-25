@@ -1,10 +1,16 @@
 require('dotenv').config();
 
-const { Client } = require('discord.js');
+const { Client, WebhookClient } = require('discord.js');
 
 const client = new Client({
   partials: ['MESSAGE', 'REACTION'],
 });
+
+const webhookClient = new WebhookClient(
+  process.env.WEBHOOK_ID,
+  process.env.WEBHOOK_TOKEN
+);
+
 const PREFIX = '$';
 
 client.on('ready', () => {
@@ -49,6 +55,9 @@ client.on('message', async (message) => {
         console.log(error);
         message.channel.send('An error occurred.');
       }
+    } else if (CMD_NAME === 'announce') {
+      const message = args.join(' ');
+      webhookClient.send(message);
     }
   }
 });
