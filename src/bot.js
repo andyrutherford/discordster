@@ -2,7 +2,9 @@ require('dotenv').config();
 
 const { Client } = require('discord.js');
 
-const client = new Client();
+const client = new Client({
+  partials: ['MESSAGE', 'REACTION'],
+});
 const PREFIX = '$';
 
 client.on('ready', () => {
@@ -41,12 +43,42 @@ client.on('message', async (message) => {
         );
       if (args.length === 0) return message.reply('Please provide an ID.');
       try {
-        const user = await message.guild.members.ban(args[0]);
+        await message.guild.members.ban(args[0]);
         message.channel.send('User was banned');
       } catch (error) {
         console.log(error);
         message.channel.send('An error occurred.');
       }
+    }
+  }
+});
+
+client.on('messageReactionAdd', (reaction, user) => {
+  const { name } = reaction.emoji;
+  const member = reaction.message.guild.members.cache.get(user.id);
+  if (reaction.message.id === '747656376515428455') {
+    switch (name) {
+      case '🍑':
+        member.roles.add('747174926502650265');
+        break;
+      case '🍌':
+        member.roles.add('747267025503969920');
+        break;
+    }
+  }
+});
+
+client.on('messageReactionRemove', (reaction, user) => {
+  const { name } = reaction.emoji;
+  const member = reaction.message.guild.members.cache.get(user.id);
+  if (reaction.message.id === '747656376515428455') {
+    switch (name) {
+      case '🍑':
+        member.roles.remove('747174926502650265');
+        break;
+      case '🍌':
+        member.roles.remove('747267025503969920');
+        break;
     }
   }
 });
